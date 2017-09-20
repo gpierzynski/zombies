@@ -6,7 +6,7 @@ var m;
 var monsters;
 var monster_num;
 var x;
-var y;
+var y;  
 
 function setup() {
   canvas = createCanvas(1100, 650);
