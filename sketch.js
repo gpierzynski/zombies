@@ -1,25 +1,38 @@
 var canvas;
 var player;
 var house;
-var monster;
-var m;
 var monsters;
+var shutters;
 var monster_num;
 var x;
-var y;  
+var y;
+var x_min = 0;
+var x_max = 1100;
+var y_min = 0;
+var y_max = 650;
 
 function setup() {
   canvas = createCanvas(1100, 650);
   centerCanvas();
   player = new Player(1100/2, 650/2);
   monsters = new Map();
+  shutters = new Map();
   monster_num = 0;
-  x = 0;
+  //starting x, y coordinates of first monster
+  x = 970;
   y = 0;
-  monster = new Monster(x, y);
-  monsters.set(monster_num, monster);
+  //spawn first monster
+  monsters.set(monster_num, new Monster(x, y));
   monster_num += 1;
   house = new House(175, 85);
+  //left
+  shutters.set(0, new Shutter(175, 305, 5, 40));
+  //upper
+  shutters.set(1, new Shutter(540, 85, 40, 5));
+  //right
+  shutters.set(2, new Shutter(920, 305, 5, 40));
+  //lower
+  shutters.set(3, new Shutter(540, 580, 40, 5));
   time = 0;
 }
 
@@ -28,32 +41,61 @@ function centerCanvas() {
   canvas.position(x, 100);
 }
 
+function getRandomX(min, max) {
+  return Math.random() * (x_max - x_min) + x_min;
+}
+
+function getRandomY(min, max) {
+  return Math.random() * (y_max - y_min) + y_min;
+}
+
 function draw() {
   background(0);
   fill(255, 100);
+  //keep an event listener for keyboard input
   keys();
   time += 0.01;
+  //every so often spawn a new monster
   if (time >= 10) {
-    x += 40;
-    y += 40;
+    valid_spawn = false;
+    //make sure it spawns outside of the house
+    while (!valid_spawn) {
+      x = getRandomX(x_min, x_max);
+      y = getRandomY(y_min, y_max);
+      //if its not inside the house, then its okay
+      if ( !(x > 175 && x < 925 && y > 80 && y < 580) ) {
+        valid_spawn = true;
+      }
+    }
     monsters.set(monster_num, new Monster(x, y));
     monster_num += 1;
     time = 0;
   }
   house.show();
   player.show();
-  //monsters.get(0).show();
-  //monsters.get(0).move();
-  for (var i = 0; i <= monsters.size; i++){
+
+  //displays shutters
+  for (var i = 0; i < shutters.size; i++) {
+    if (shutters.has(i)){
+      shutters.get(i).show();
+    }
+  }
+  //displays monsters
+  for (var i = 0; i < monsters.size; i++){
     if (monsters.has(i)){
       monsters.get(i).show();
     }
   }
-  for (var i = 0; i <= monsters.size; i++){
+  //moves monsters
+  for (var i = 0; i < monsters.size; i++){
     if (monsters.has(i)){
       monsters.get(i).move();
     }
   }
+}
+
+function mouseClicked() {
+  console.log("(" + mouseX + ", " + mouseY + ")");
 }
 
 function keys() {
