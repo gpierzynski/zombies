@@ -19,10 +19,16 @@ function setup() {
   shutters = new Map();
   monster_num = 0;
   //starting x, y coordinates of first monster
-  x = 970;
+  x = 0;
   y = 0;
-  //spawn first monster
-  monsters.set(monster_num, new Monster(x, y));
+  //spawn four monsters (currently testing speed from each zone)
+  monsters.set(monster_num, new Monster(0, 0));
+  monster_num += 1;
+  monsters.set(monster_num, new Monster(1080, 0));
+  monster_num += 1;
+  monsters.set(monster_num, new Monster(1080, 630));
+  monster_num += 1;
+  monsters.set(monster_num, new Monster(0, 630));
   monster_num += 1;
   house = new House(175, 85);
   //left

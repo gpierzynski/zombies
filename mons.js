@@ -11,7 +11,7 @@ function Monster(x, y) {
 
   this.toPlayer = function () {
     //when inside is reached, switch targets
-    if (this.x >= 170 && this.x <= 90 && this.y >= 70 && this.y <= 570) {
+    if (this.x >= 195 && this.x <= 945 && this.y >= 100 && this.y <= 600) {
       this.direction = (this.y - player.y) / (this.x - player.x);
       //equation to go toward window -- y - b = m(x -a)
       this.x += 0.5;
@@ -33,7 +33,6 @@ function Monster(x, y) {
       this.toWindow(1, false, false);
     }
     //right
-    //if character spawns right of the house
     if (x > 925) {
       this.toWindow(2, false, true);
     }
@@ -46,17 +45,19 @@ function Monster(x, y) {
       this.toWindow(3, false, false);
     }
   }
-
-  this.toWindow = function (num, operator, slow) {
+  //num specifies the window
+  //if monster is moving left to right, x should increase (operator will be +)
+  //if monster is moving right to left, x should decrease (operator will be -)
+  this.toWindow = function (num, l_to_r, slow) {
     //slope formula -- (y2 - y1) / (x2 - x1)
     this.direction = (this.y - shutters.get(num).y) / (this.x - shutters.get(num).x);
-    //equation to go toward window -- y - b = m(x -a)
-    if (slow)
-      this.x -= 0.05;
-    else if (operator)
+    /*if (slow)
+      this.x -= 0.05;*/
+    if (l_to_r)
       this.x += 0.5;
     else
       this.x -= 0.5;
+    //equation to go toward window -- y - b = m(x -a)
     this.y = this.direction * (this.x - shutters.get(num).x) + shutters.get(num).y;
   }
   this.show = function () {
