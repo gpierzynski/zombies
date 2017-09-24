@@ -22,12 +22,16 @@ function setup() {
   x = 0;
   y = 0;
   //spawn four monsters (currently testing speed from each zone)
-  monsters.set(monster_num, new Monster(0, 0));
+  //upper left corner
+  monsters.set(monster_num, new Monster(10, 10));
   monster_num += 1;
+  //upper right corner
   monsters.set(monster_num, new Monster(1080, 0));
   monster_num += 1;
+  //lower right corner
   monsters.set(monster_num, new Monster(1080, 630));
   monster_num += 1;
+  //lower left corner
   monsters.set(monster_num, new Monster(0, 630));
   monster_num += 1;
   house = new House(175, 85);
