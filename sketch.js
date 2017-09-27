@@ -21,6 +21,24 @@ function setup() {
   x = 0;
   y = 0;
   house = new House(175, 85);
+  monsters.set(monster_num, new Monster(0,0));
+  monster_num += 1;
+  monsters.set(monster_num, new Monster(200,0));
+  monster_num += 1;
+  monsters.set(monster_num, new Monster(200,600));
+  monster_num += 1;
+  monsters.set(monster_num, new Monster(0,200));
+  monster_num += 1;
+  monsters.set(monster_num, new Monster(0,630));
+  monster_num += 1;
+  monsters.set(monster_num, new Monster(200,620));
+  monster_num += 1;
+  monsters.set(monster_num, new Monster(990, 630));
+  monster_num += 1;
+  monsters.set(monster_num, new Monster(900, 600));
+  monster_num += 1;
+  monsters.set(monster_num, new Monster(930, 0));
+  monster_num += 1;
   //left
   shutters.set(0, new Shutter(175, 305, 5, 40));
   //upper
@@ -38,7 +56,7 @@ function centerCanvas() {
 }
 
 function getRandomX(min, max) {
-  return (Math.random() * (x_max - x_min) + x_min);
+  return floor(Math.random() * (x_max - x_min) + x_min);
 }
 
 function getRandomY(min, max) {

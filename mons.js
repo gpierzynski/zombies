@@ -3,10 +3,9 @@ function Monster(x, y) {
   this.y = y;
   this.direction = 0;
   this.move = function() {
-    console.log("x coordinate is: " + this.x);
+    console.log("y coordinate is: " + this.y);
     //move toward closest window
     this.whichWindow();
-    //this.windowReached();
     //go for player
     //this.toPlayer();
   }
@@ -68,27 +67,24 @@ function Monster(x, y) {
     //if monster collides with the walls of the house, move to window
     if (this.collide(house.outerX, house.outerY, house.outerWidth, house.outerHeight)) {
       if(this.collide(shutters.get(num).x, shutters.get(num).y, shutters.get(num).w, shutters.get(num).h)){
-        //console.log("colliding with shutter");
         return;
       }
-      else if( (this.x == 155 || this.x == 925) && left_to_right){
-        console.log("moving down");
-        this.y += 0.5;
-      }
-      else if( (this.x == 155 || this.x == 925) && !left_to_right){
-        console.log("moving up");
-        this.y -= 0.5;
-      }
-      else if( (this.y == 65 || this.y == 580) && left_to_right){
-        console.log("moving right")
-        this.x += 0.5;
-      }
-      else if( (this.y == 65 || this.y == 580) && !left_to_right){
-        console.log("moving left");
-        this.x -= 0.5;
-      }
-      //console.log("monster x: " + this.x);
-      //console.log("shutter x: " + shutters.get(num).x);
+      // if player is against left/right wall, move up or down to get to left/right window
+      if (this.x == 155 && num == 0 && this.y < shutters.get(0).y ||
+         this.x == 925 && num == 2 && this.y < shutters.get(2).y)
+        this.y += 1;
+      else if (this.x == 155 && num == 0 && shutters.get(0).y < this.y ||
+               this.x == 925 && num == 2 && shutters.get(2).y < this.y)
+        this.y -= 1;
+      //if player is against top wall and trying to go to
+      if( (this.y == 65 && num == 1 && this.x < shutters.get(1).x) ||
+          ((this.y == 65 || this.y == 585) && num == 2) ||
+          (this.y == 585 && num == 3 && this.x < this.shutters.get(3).x))
+        this.x += 1;
+      else if( (this.y == 65 && num == 1 && this.x > shutters.get(1).x) ||
+          ((this.y == 65 || this.y == 585) && num == 0) ||
+          (this.y == 585 && num == 3 && this.x > this.shutters.get(3).x))
+        this.x -= 1;
     }
     else {
       if (this.x < shutters.get(num).x)
