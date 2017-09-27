@@ -1,11 +1,26 @@
-function Shutter(x, y, h, w) {
+function Shutter(x, y, h, w, cx, cy, ch, cw) {
   this.x = x;
   this.y = y;
   this.h = h;
   this.w = w;
-  //this.durability = 100;
+  this.centerX = cx;
+  this.centerY = cy;
+  this.centerH = ch;
+  this.centerW = cw;
+  this.broken = false;
+  this.r = 99;
+  this.g = 73;
+  this.b = 25;
+  this.breakApart = function() {
+    this.broken = true;
+    this.r = 0;
+    this.g = 255;
+    this.b = 0;
+  }
   this.show = function () {
-    fill(0, 255, 0, 200);
+    fill(this.r, this.g, this.b, 200);
     rect(this.x, this.y, this.h, this.w);
+    fill(2, 2, 2);
+    rect(this.centerX, this.centerY, this.centerH, this.centerW);
   };
 }

@@ -2,21 +2,27 @@ function Monster(x, y) {
   this.x = x;
   this.y = y;
   this.direction = 0;
+  this.inside = false;
   this.move = function() {
-    console.log("y coordinate is: " + this.y);
-    //move toward closest window
-    this.whichWindow();
-    //go for player
-    //this.toPlayer();
+    if(!this.inside)
+      this.whichWindow();
+    else
+      this.toPlayer();
   }
 
   this.toPlayer = function () {
-    //when inside is reached, switch targets
-    if (this.x >= 195 && this.x <= 905 && this.y >= 100 && this.y <= 630) {
-      this.direction = (this.y - player.y) / (this.x - player.x);
-      //equation to go toward window -- y - b = m(x -a)
-      this.x += 0.5;
-      this.y = this.direction * (this.x - player.x) + player.y;
+    if (this.isColliding(player.x, player.y, 20, 20)) {
+        return;
+    }
+    else{
+      if (this.x < player.x && this.x <= 895)
+        this.x += 1;
+      else if (this.x > player.x && this.x >= 185)
+        this.x -= 1;
+      if(this.y < player.y && this.y <= 555)
+        this.y += 1;
+      else if (this.y > player.y && this.y >= 95)
+        this.y -= 1;
     }
   }
   this.getDistance = function (num) {
@@ -50,7 +56,7 @@ function Monster(x, y) {
     this.toWindow(closest, left_to_right);
   }
   //parameters are dimensions of object colliding with monster
-  this.collide = function (x, y, w, h) {
+  this.isColliding = function (x, y, w, h) {
     if(this.x + 20 >= x &&
       this.x <= x + w &&
       this.y + 20 >= y &&
@@ -60,13 +66,45 @@ function Monster(x, y) {
     return false;
   }
 
+  this.attackShutter = function(num) {
+    time += second();
+    console.log(time);
+    if (time > 15000) {
+      shutters.get(num).breakApart();
+    }
+  }
+
+  this.shutterCollide = function(num) {
+    return (this.isColliding(shutters.get(num).centerX, shutters.get(num).centerY, shutters.get(num).centerW, shutters.get(num).centerH))
+  }
+
+  this.enterHouse = function(num) {
+    if(num == 0)
+      this.x += 1;
+    else if(num == 1)
+      this.y += 1;
+    else if(num == 2)
+      this.x -= 1;
+    else if(num == 3)
+      this.y -= 1;
+    if(num == 0 && this.x >= 180 ||
+       num == 1 && this.y >= 90 ||
+       num == 2 && this.x <= 900||
+       num == 3 && this.y <= 560)
+      this.inside = true;
+  }
+
   //num specifies the window
   //if monster is moving left to right, x should increase (operator will be +)
   //if monster is moving right to left, x should decrease (operator will be -)
   this.toWindow = function (num, left_to_right) {
     //if monster collides with the walls of the house, move to window
-    if (this.collide(house.outerX, house.outerY, house.outerWidth, house.outerHeight)) {
-      if(this.collide(shutters.get(num).x, shutters.get(num).y, shutters.get(num).w, shutters.get(num).h)){
+    if (this.isColliding(house.outerX, house.outerY, house.outerWidth, house.outerHeight)) {
+      if(this.shutterCollide(num)){
+        if(!shutters.get(num).broken)
+          this.attackShutter(num);
+        if(!this.inside && shutters.get(num).broken)
+          this.enterHouse(num);
         return;
       }
       // if player is against left/right wall, move up or down to get to left/right window
