@@ -4,7 +4,7 @@ function Player(x, y) {
   this.move = function (direction) {
       //right
       if (direction == 1 && this.x <= 895)
-          this.x += 5;
+        this.x += 5;
       //down
       if (direction == 2 && this.y <= 555)
         this.y += 5;
@@ -16,7 +16,9 @@ function Player(x, y) {
         this.y -= 5;
   };
   this.show = function () {
+    //green color
     fill(0, 255, 0, 200);
+    //player is a 20x20 square
     rect(this.x, this.y, 20, 20);
   };
 }

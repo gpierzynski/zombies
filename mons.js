@@ -3,8 +3,10 @@ function Monster(x, y) {
   this.y = y;
   this.direction = 0;
   this.move = function() {
+    console.log("x coordinate is: " + this.x);
     //move toward closest window
     this.whichWindow();
+    //this.windowReached();
     //go for player
     //this.toPlayer();
   }
@@ -30,35 +32,75 @@ function Monster(x, y) {
     //if monster is closer to any of the other windows, go to that one
     //using distance formula -- sqrt( (x2 - x1)^2 + (y2 - y1)^2 )
     //upper
-    if ( this.getDistance(1) < distance) {
+    if (this.getDistance(1) < distance) {
       distance = this.getDistance(1);
       closest = 1;
     }
     //right
-    if ( this.getDistance(2) < distance) {
+    if (this.getDistance(2) < distance) {
       distance = this.getDistance(2);
       closest = 2;
     }
     //lower
-    if ( this.getDistance(3) < distance)
+    if (this.getDistance(3) < distance)
       closest = 3;
-    if (x >= 1100/2)
+
+    if (x > shutters.get(closest).x)
       left_to_right = false;
 
     this.toWindow(closest, left_to_right);
   }
+  //parameters are dimensions of object colliding with monster
+  this.collide = function (x, y, w, h) {
+    if(this.x + 20 >= x &&
+      this.x <= x + w &&
+      this.y + 20 >= y &&
+      this.y <= y + h) {
+        return true;
+      }
+    return false;
+  }
+
   //num specifies the window
   //if monster is moving left to right, x should increase (operator will be +)
   //if monster is moving right to left, x should decrease (operator will be -)
-  this.toWindow = function (num, l_to_r) {
-    //slope formula -- (y2 - y1) / (x2 - x1)
-    this.direction = (y - shutters.get(num).y) / (x - shutters.get(num).x);
-    if (l_to_r)
-      this.x += 0.5;
-    else
-      this.x -= 0.5;
-    //equation to go toward window -- y - b = m(x - a)
-    this.y = this.direction * (this.x - shutters.get(num).x) + shutters.get(num).y;
+  this.toWindow = function (num, left_to_right) {
+    //if monster collides with the walls of the house, move to window
+    if (this.collide(house.outerX, house.outerY, house.outerWidth, house.outerHeight)) {
+      if(this.collide(shutters.get(num).x, shutters.get(num).y, shutters.get(num).w, shutters.get(num).h)){
+        //console.log("colliding with shutter");
+        return;
+      }
+      else if( (this.x == 155 || this.x == 925) && left_to_right){
+        console.log("moving down");
+        this.y += 0.5;
+      }
+      else if( (this.x == 155 || this.x == 925) && !left_to_right){
+        console.log("moving up");
+        this.y -= 0.5;
+      }
+      else if( (this.y == 65 || this.y == 580) && left_to_right){
+        console.log("moving right")
+        this.x += 0.5;
+      }
+      else if( (this.y == 65 || this.y == 580) && !left_to_right){
+        console.log("moving left");
+        this.x -= 0.5;
+      }
+      //console.log("monster x: " + this.x);
+      //console.log("shutter x: " + shutters.get(num).x);
+    }
+    else {
+      if (this.x < shutters.get(num).x)
+        this.x += 1;
+      else if (this.x > shutters.get(num).x)
+        this.x -= 1;
+      if(this.y < shutters.get(num).y)
+        this.y += 1;
+      else if (this.y > shutters.get(num).y)
+        this.y -= 1;
+    }
+
   }
   this.show = function () {
     fill(0, 255, 0, 200);

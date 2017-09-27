@@ -6,10 +6,10 @@ var shutters;
 var monster_num;
 var x;
 var y;
-var x_min = 0;
-var x_max = 1100;
-var y_min = 0;
-var y_max = 650;
+var x_min = -20;
+var x_max = 1140;
+var y_min = -20;
+var y_max = 670;
 
 function setup() {
   canvas = createCanvas(1100, 650);
@@ -18,22 +18,8 @@ function setup() {
   monsters = new Map();
   shutters = new Map();
   monster_num = 0;
-  //starting x, y coordinates of first monster
   x = 0;
   y = 0;
-  //spawn four monsters (currently testing speed from each zone)
-  //upper left corner
-  monsters.set(monster_num, new Monster(10, 10));
-  monster_num += 1;
-  //upper right corner
-  monsters.set(monster_num, new Monster(1080, 0));
-  monster_num += 1;
-  //lower right corner
-  monsters.set(monster_num, new Monster(1080, 630));
-  monster_num += 1;
-  //lower left corner
-  monsters.set(monster_num, new Monster(0, 630));
-  monster_num += 1;
   house = new House(175, 85);
   //left
   shutters.set(0, new Shutter(175, 305, 5, 40));
@@ -52,11 +38,11 @@ function centerCanvas() {
 }
 
 function getRandomX(min, max) {
-  return Math.random() * (x_max - x_min) + x_min;
+  return (Math.random() * (x_max - x_min) + x_min);
 }
 
 function getRandomY(min, max) {
-  return Math.random() * (y_max - y_min) + y_min;
+  return floor(Math.random() * (y_max - y_min) + y_min);
 }
 
 function draw() {
@@ -73,7 +59,7 @@ function draw() {
       x = getRandomX(x_min, x_max);
       y = getRandomY(y_min, y_max);
       //if its not inside the house, then its okay
-      if ( !(x > 175 && x < 925 && y > 80 && y < 580) ) {
+      if ( !(x > 0 && x < 1140 && y > 0 && y < 670) ) {
         valid_spawn = true;
       }
     }
