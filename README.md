@@ -1,16 +1,16 @@
-#zombies
+# zombies
 A 2-D survival game written in JavaScript. The p5.js library is used for most of
  the image processing/drawing.
 
 A link to the p5.js website can be found here: https://p5js.org/
 
-##Basic Idea
+## Basic Idea
 The player spawns inside of a house. The windows of the house are boarded up
 with shutters. After some time passes, zombies will spawn and walk toward the
 house. They will break down the shutters and enter the house. Once they are
 inside, they will proceed to chase the player.
 
-##How to Play
+## How to Play
 The player can move left, right, up, and/or down using the standard W-A-S-D keys.
 
 `W - UP`
