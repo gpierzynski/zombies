@@ -11,7 +11,7 @@ house. They will break down the shutters and enter the house. Once they are
 inside, they will proceed to chase the player.
 
 ## How to Play
-The player can move left, right, up, and/or down using the standard W-A-S-D keys.
+The player can move up, left, down, and/or right using the standard W-A-S-D keys.
 
 `W - UP`
 
