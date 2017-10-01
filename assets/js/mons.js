@@ -3,11 +3,15 @@ function Monster(x, y) {
   this.y = y;
   this.direction = 0;
   this.target_window = -1;
-  this.health = 200;
+  this.health = 100;
   this.inside = false;
   this.r = 0;
   this.g = 255;
   this.b = 0;
+  this.hit = false;
+  this.s = 1000;
+  this.droppedAmmo = false;
+  this.ammoTaken = false;
   this.move = function() {
     this.toWindow(this.target_window);
     if(this.inside)
@@ -16,7 +20,12 @@ function Monster(x, y) {
 
   this.toPlayer = function () {
     if (this.isColliding(player.x, player.y, 20, 20)) {
-        return;
+        this.s += second();
+        //console.log(time);
+        if (this.s > 1000) {
+          player.react(this.x , this.y);
+          this.s = 0;
+        }
     }
     else{
       if (this.x < player.x && this.x <= 895)
@@ -29,6 +38,24 @@ function Monster(x, y) {
         this.y -= 1;
     }
   }
+
+  this.attackPlayer = function () {
+    player.react();
+  }
+
+  this.dropAmmo = function () {
+    if(!this.ammoTaken && this.droppedAmmo){
+      fill(128, 129, 130);
+      rect(this.x, this.y, 10, 10);
+    }
+    if (this.isColliding(player.x, player.y, 20, 20)){
+      if(this.health <= 0 && this.droppedAmmo && !this.ammoTaken){
+        this.ammoTaken = true;
+        player.ammunition += 10;
+      }
+    }
+  }
+
   this.getDistance = function (num) {
     return Math.sqrt( Math.pow(x - shutters.get(num).x, 2) + Math.pow(y - shutters.get(num).y, 2) );
   }
@@ -66,9 +93,15 @@ function Monster(x, y) {
   }
 
   this.react = function() {
-    this.health -= 10;
+    this.health -= 25;
     fill(255, 0, 0);
     rect(this.x, this.y, 20, 20);
+    if(this.health <= 0){
+      mons_down += 1;
+      if(Math.floor(Math.random() * 10) > 5)
+        this.droppedAmmo = true;
+      this.dropAmmo();
+    }
     //this.show(255, 0, 0);
   }
 

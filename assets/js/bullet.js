@@ -31,7 +31,7 @@ function Bullet(x, y, target_x, target_y) {
     var mons_num = -1;
     for (var i = 0; i < monsters.size; i++){
       if (monsters.has(i)){
-        if(this.collided(monsters.get(i).x, monsters.get(i).y, 20, 20)){
+        if(this.collided(monsters.get(i).x, monsters.get(i).y, 20, 20) && monsters.get(i).health > 0){
           mons_num = i;
           break;
         }

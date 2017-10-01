@@ -17,6 +17,12 @@ function Shutter(x, y, h, w, cx, cy, ch, cw) {
     this.g = 181;
     this.b = 255;
   }
+  this.repair = function() {
+    this.broken = false;
+    this.r = 99;
+    this.g = 73;
+    this.b = 25;
+  }
   this.show = function () {
     fill(this.r, this.g, this.b, 200);
     rect(this.x, this.y, this.h, this.w);

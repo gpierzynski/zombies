@@ -13,7 +13,9 @@ var y_min = -20;
 var y_max = 670;
 var player_img;
 var monster_img;
-var two_mins = 0;
+var text_s = 0;
+var mons_down = 0;
+var wave_num = 1;
 
 function preload() {
   player_img = loadImage("assets/images/player.png");
@@ -38,9 +40,7 @@ function setup() {
   shutters.set(2, new Shutter(920, 305, 5, 40, 920, 323, 5, 5));
   //lower
   shutters.set(3, new Shutter(540, 580, 40, 5, 558, 580, 5, 5));
-  //setInterval(spawnMonster, 10000);
   time = 0;
-  //noLoop();
 }
 
 function centerCanvas() {
@@ -79,14 +79,20 @@ function draw() {
   //keep an event listener for keyboard input
   keys();
   time += second();
-  //console.log(time);
+
   if (time > 15000) {
     spawnMonster();
     time = 0;
   }
-  house.show();
-  player.show();
 
+  house.show();
+  if(player.health > 0)
+    player.show();
+  else{
+    quitGame();
+  }
+  if(monsters.size == 0)
+    showWaveNum();
   //displays shutters
   for (var i = 0; i < shutters.size; i++) {
     if (shutters.has(i)){
@@ -100,27 +106,57 @@ function draw() {
         monsters.get(i).show();
         monsters.get(i).move();
       }
+      else{
+        monsters.get(i).dropAmmo();
+      }
     }
   }
 
   for (var i = 0; i < player.fired.size; i++){
     if (player.fired.has(i)){
-      if(!player.fired.get(i).done)
+      if(!player.fired.get(i).done){
         player.fired.get(i).show();
-      player.fired.get(i).move();
+        player.fired.get(i).move();
+      }
     }
   }
-  //showWaveNum();
+  gameInfo();
+  if(mons_down == 15)
+    switchWave();
+}
+
+function switchWave() {
+  noLoop();
+  monsters.clear();
+  monster_num = 0;
+  wave_num += 1;
+  mons_down = 0;
+  loop();
 }
 
 function showWaveNum() {
-  two_mins += second();
-  if(two_mins >= 30000){
-    textSize(64);
+    textSize(54);
+    textFont("Comic Sans MS");
     fill(211, 247, 34);
-    text("Wave #", 450, 325);
-    twomins = 0;
-  }
+    text("WAVE " + wave_num, 450, 325);
+}
+
+function gameInfo() {
+  textSize(18);
+  textFont("Comic Sans MS");
+  fill(211, 247, 34);
+  text("Wave: " + wave_num + "    Zombies killed: " + mons_down, 10, 15);
+  textSize(18);
+  text("Ammunition: " + player.ammunition, 960, 15);
+}
+
+function quitGame() {
+  noLoop();
+  textSize(54);
+  textFont("Comic Sans MS");
+  fill(255, 0, 0);
+  text("GAME OVER", 400, 325);
+  //noLoop();
 }
 
 function mouseReleased() {
@@ -138,4 +174,6 @@ function keys() {
     player.move(3);
   if (keyIsDown(87))
     player.move(4);
+  if (keyIsDown(82))
+    player.repairShutter();
 }
