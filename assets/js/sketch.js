@@ -121,8 +121,20 @@ function draw() {
     }
   }
   gameInfo();
+  healthBar();
   if(mons_down == 15)
     switchWave();
+}
+
+function healthBar() {
+  textSize(18);
+  textFont("Comic Sans MS");
+  fill(211, 247, 34);
+  text("Health: ", 380, 15);
+  fill(255, 0, 0);
+  rect(450, 7, 300, 5);
+  fill(0, 255, 0);
+  rect(450, 7, player.health * 3, 5);
 }
 
 function switchWave() {
