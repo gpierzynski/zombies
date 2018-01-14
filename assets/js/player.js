@@ -21,7 +21,7 @@ function Player(x, y) {
   };
   this.attack = function (prev_x, prev_y, target_x, target_y) {
     if(this.ammunition > 0){
-      this.fired.set(this.bullet_num, new Bullet(prev_x, prev_y, target_x, target_y));
+      this.fired.set(this.bullet_num, new Bullet(prev_x, prev_y, this.x, this.y, target_x, target_y));
       this.bullet_num += 1;
       this.ammunition -= 1;
     }

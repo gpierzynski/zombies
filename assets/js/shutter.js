@@ -23,6 +23,10 @@ function Shutter(x, y, h, w, cx, cy, ch, cw) {
     this.g = 73;
     this.b = 25;
   }
+  this.react = function() {
+    fill(99, 67, 6);
+    rect(this.x, this.y, this.h, this.w);
+  }
   this.show = function () {
     fill(this.r, this.g, this.b, 200);
     rect(this.x, this.y, this.h, this.w);

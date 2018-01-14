@@ -1,11 +1,15 @@
-function Bullet(x, y, target_x, target_y) {
+function Bullet(x, y, origin_x, origin_y, target_x, target_y) {
   this.x = x;
   this.y = y;
+  this.origin_x = origin_x;
+  this.origin_y = origin_y;
   this.target_x = target_x;
   this.target_y = target_y;
   this.diameter = 3;
+  //marks if it is done traveling
   this.done = false;
   this.slope = (this.y - this.target_y) / (this.x - this.target_x + 0.00001)
+  //checks collision of circle with rectangular object
   this.collided = function (rx, ry, rw, rh) {
     var testX = this.x;
     var testY = this.y;
@@ -51,15 +55,26 @@ function Bullet(x, y, target_x, target_y) {
       return;
     }
     else{
-      //console.log("slope is: " + slope);
-      if ( this.target_x < x)
-        this.x -= 10;
-      else if( this.target_x > x )
-        this.x += 10;
-      else{
-        return;
+      rise = Math.abs(this.y - this.target_y);
+      run = Math.abs(this.x - this.target_x);
+      angle = acos( run / Math.sqrt(rise * rise + run * run) );
+      x = 5 * cos(angle);
+      y = 5 * sin(angle);
+      //target is top right
+      if (this.target_x > this.origin_x && this.target_y < this.origin_y)
+        y *= -1;
+      //target is top left
+      else if (this.target_x < this.origin_x && this.target_y < this.origin_y) {
+        x *= -1;
+        y *= -1;
       }
-      this.y = this.slope * (this.x - x) + y;
+      //target is bottom left
+      else if (this.target_x < this.origin_x && this.target_y > this.origin_y) {
+        x *= -1;
+      }
+      //else target is bottom righht
+      this.x += x;
+      this.y += y;
     }
   };
   this.show = function () {

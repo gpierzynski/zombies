@@ -20,6 +20,10 @@ var wave_num = 1;
 function preload() {
   player_img = loadImage("assets/images/player.png");
   monster_img = loadImage("assets/images/zombie.png");
+  tile_img = loadImage("assets/images/tile.png");
+  horiz_couch = loadImage("assets/images/couch1.png");
+  vert_couch = loadImage("assets/images/couch2.png");
+  bed_img = loadImage("assets/images/bed.png");
 }
 
 function setup() {
@@ -40,7 +44,7 @@ function setup() {
   shutters.set(2, new Shutter(920, 305, 5, 40, 920, 323, 5, 5));
   //lower
   shutters.set(3, new Shutter(540, 580, 40, 5, 558, 580, 5, 5));
-  time = 0;
+  time = null;
 }
 
 function centerCanvas() {
@@ -70,7 +74,7 @@ function spawnMonster() {
   monsters.set(monster_num, new Monster(x, y));
   monsters.get(monster_num).whichWindow();
   monster_num += 1;
-  console.log("monster spawned");
+  //console.log("monster spawned");
 }
 
 function draw() {
@@ -78,21 +82,23 @@ function draw() {
   //fill(255, 100);
   //keep an event listener for keyboard input
   keys();
-  time += second();
-
-  if (time > 15000) {
+  if (time == null)
+    time = second();
+  console.log(second());
+  if ((second() - 5) == time) {
     spawnMonster();
-    time = 0;
+    time = null;
   }
 
   house.show();
+  if(monsters.size == 0){
+    showWaveNum();
+  }
   if(player.health > 0)
     player.show();
   else{
     quitGame();
   }
-  if(monsters.size == 0)
-    showWaveNum();
   //displays shutters
   for (var i = 0; i < shutters.size; i++) {
     if (shutters.has(i)){
@@ -147,10 +153,10 @@ function switchWave() {
 }
 
 function showWaveNum() {
-    textSize(54);
-    textFont("Comic Sans MS");
-    fill(211, 247, 34);
-    text("WAVE " + wave_num, 450, 325);
+  textSize(54);
+  textFont("Comic Sans MS");
+  fill(211, 247, 34);
+  text("WAVE " + wave_num, 450, 325);
 }
 
 function gameInfo() {
