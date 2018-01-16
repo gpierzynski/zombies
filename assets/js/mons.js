@@ -1,6 +1,8 @@
 function Monster(x, y) {
   this.x = x;
   this.y = y;
+  this.w = 20;
+  this.h = 20;
   this.direction = 0;
   this.target_window = -1;
   this.health = 100;
@@ -13,6 +15,7 @@ function Monster(x, y) {
   this.droppedAmmo = false;
   this.ammoTaken = false;
   this.attack_time = null;
+  this.collided_with = null;
   this.move = function() {
     this.toWindow(this.target_window);
     if(this.inside)
@@ -21,37 +24,38 @@ function Monster(x, y) {
 
   this.toPlayer = function () {
     //console.log("moving toward player");
-    if (this.isColliding(this.x, this.y, player.x, player.y, 20, 20)) {
-        this.s += second();
-        //console.log(time);
-        if (this.s > 1000) {
-          player.react(this.x , this.y);
-          this.s = 0;
-        }
-    }
-    else{
-      if (this.x < player.x && this.x <= 895 && !this.collidingOtherMonster(1, 0))
-        this.x += 1;
-      else if (this.x > player.x && this.x >= 185 && !this.collidingOtherMonster(-1, 0))
-        this.x -= 1;
-      if(this.y < player.y && this.y <= 555 && !this.collidingOtherMonster(0, 1))
-        this.y += 1;
-      else if (this.y > player.y && this.y >= 95 && !this.collidingOtherMonster(0, -1))
-        this.y -= 1;
-    }
-  }
-
-  this.collidingOtherMonster = function (x, y) {
-
-    for (var i = 0; i < monsters.size; i++){
-      if (monsters.has(i) && monsters.get(i) != this) {
-        if(this.isColliding(this.x + x, this.y + y, monsters.get(i).x, monsters.get(i).y, 20, 20) && monsters.get(i).health > 0 && this.health > 0){
-          //console.log("colliding with other monster");
-          return true;
-        }
+    if (isColliding(this.x, this.y, 20, 20, player.x, player.y, 20, 20)) {
+      this.s += second();
+      //console.log(time);
+      if (this.s > 1000) {
+        player.react(this.x , this.y);
+        this.s = 0;
       }
     }
-    return false;
+    else {
+      //last_x = this.x;
+      //last_y = this.y;
+      if (this.x < player.x) {
+        this.collided_with = otherCollision(this.x + 1, this.y, this);
+        if (this.collided_with == null)
+          this.x += 1;
+      }
+      else if (this.x > player.x) {
+        this.collided_with = otherCollision(this.x - 1, this.y, this);
+        if (this.collided_with == null)
+          this.x -= 1;
+      }
+      if (this.y < player.y) {
+        this.collided_with = otherCollision(this.x, this.y + 1, this);
+        if (this.collided_with == null)
+          this.y += 1;
+      }
+      else if (this.y > player.y) {
+        this.collided_with = otherCollision(this.x, this.y - 1, this);
+        if (this.collided_with == null)
+          this.y -= 1;
+      }
+    }
   }
 
   this.attackPlayer = function () {
@@ -63,7 +67,7 @@ function Monster(x, y) {
       fill(128, 129, 130);
       rect(this.x, this.y, 10, 10);
     }
-    if (this.isColliding(this.x, this.y, player.x, player.y, 20, 20)){
+    if (isColliding(this.x, this.y, this.w, this.h, player.x, player.y, player.w, player.h)){
       if(this.health <= 0 && this.droppedAmmo && !this.ammoTaken){
         this.ammoTaken = true;
         player.ammunition += 10;
@@ -96,21 +100,11 @@ function Monster(x, y) {
       closest = 3;
     this.target_window = closest;
   }
-  //parameters are dimensions of object colliding with monster
-  this.isColliding = function (x1, y1, x2, y2, w2, h2) {
-    if(x1 + 20 >= x2 &&
-      x1 <= x2 + w2 &&
-      y1 + 20 >= y2 &&
-      y1 <= y2 + h2) {
-        return true;
-    }
-    return false;
-  }
 
   this.react = function() {
     this.health -= 25;
     fill(255, 0, 0);
-    rect(this.x, this.y, 20, 20);
+    rect(this.x, this.y, this.w, this.h);
     if(this.health <= 0){
       mons_down += 1;
       if(Math.floor(Math.random() * 10) > 5)
@@ -122,17 +116,17 @@ function Monster(x, y) {
 
   this.attackShutter = function(num) {
     if(this.attack_time == null){
-      this.attack_time = second();
+      this.attack_time = second() % 60;
     }
     //console.log(floor(millis()));
-    if((second() - 5) == this.attack_time){
+    if((second() - 5) % 60 == this.attack_time){
       shutters.get(num).breakApart();
-      this.attack_time = null;
+      //this.attack_time = null;
     }
   }
 
   this.shutterCollide = function(num) {
-    return (this.isColliding(this.x, this.y, shutters.get(num).centerX, shutters.get(num).centerY, shutters.get(num).centerW, shutters.get(num).centerH))
+    return (isColliding(this.x, this.y, this.w, this.h, shutters.get(num).centerX, shutters.get(num).centerY, shutters.get(num).centerW, shutters.get(num).centerH))
   }
 
   this.enterHouse = function(num) {
@@ -156,7 +150,7 @@ function Monster(x, y) {
   //if monster is moving right to left, x should decrease (operator will be -)
   this.toWindow = function (num) {
     //if monster collides with the walls of the house, move to window
-    if (this.isColliding(this.x, this.y, house.outerX, house.outerY, house.outerWidth, house.outerHeight)) {
+    if (isColliding(this.x, this.y, this.w, this.h, house.outerX, house.outerY, house.outerWidth, house.outerHeight)) {
       if(this.shutterCollide(num)){
         if(!shutters.get(num).broken)
           this.attackShutter(num);

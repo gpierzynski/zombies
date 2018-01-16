@@ -8,7 +8,6 @@ function Bullet(x, y, origin_x, origin_y, target_x, target_y) {
   this.diameter = 3;
   //marks if it is done traveling
   this.done = false;
-  this.slope = (this.y - this.target_y) / (this.x - this.target_x + 0.00001)
   //checks collision of circle with rectangular object
   this.collided = function (rx, ry, rw, rh) {
     var testX = this.x;
@@ -35,7 +34,7 @@ function Bullet(x, y, origin_x, origin_y, target_x, target_y) {
     var mons_num = -1;
     for (var i = 0; i < monsters.size; i++){
       if (monsters.has(i)){
-        if(this.collided(monsters.get(i).x, monsters.get(i).y, 20, 20) && monsters.get(i).health > 0){
+        if(this.collided(monsters.get(i).x, monsters.get(i).y, monsters.get(i).w, monsters.get(i).h) && monsters.get(i).health > 0){
           mons_num = i;
           break;
         }

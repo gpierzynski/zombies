@@ -18,12 +18,16 @@ var mons_down = 0;
 var wave_num = 1;
 
 function preload() {
-  player_img = loadImage("assets/images/player.png");
+  player_right = loadImage("assets/images/player_right.png");
+  player_left = loadImage("assets/images/player_left.png")
   monster_img = loadImage("assets/images/zombie.png");
   tile_img = loadImage("assets/images/tile.png");
   horiz_couch = loadImage("assets/images/couch1.png");
   vert_couch = loadImage("assets/images/couch2.png");
   bed_img = loadImage("assets/images/bed.png");
+  counter1 = loadImage("assets/images/counter1.png");
+  counter2 = loadImage("assets/images/counter2.png");
+  sink = loadImage("assets/images/sink.png");
 }
 
 function setup() {
@@ -36,14 +40,7 @@ function setup() {
   x = 0;
   y = 0;
   house = new House(175, 85);
-  //left
-  shutters.set(0, new Shutter(175, 305, 5, 40, 175, 323, 5, 5));
-  //upper
-  shutters.set(1, new Shutter(540, 85, 40, 5, 558, 85, 5, 5));
-  //right
-  shutters.set(2, new Shutter(920, 305, 5, 40, 920, 323, 5, 5));
-  //lower
-  shutters.set(3, new Shutter(540, 580, 40, 5, 558, 580, 5, 5));
+  house.init();
   time = null;
 }
 
@@ -81,29 +78,23 @@ function draw() {
   background(82, 89, 7);
   //fill(255, 100);
   //keep an event listener for keyboard input
-  keys();
+  //keys();
   if (time == null)
-    time = second();
-  console.log(second());
-  if ((second() - 5) == time) {
+    time = second() % 60;
+  //console.log(second());
+  if (((second() % 60) - 5) == time) {
     spawnMonster();
     time = null;
   }
-
+  keys();
   house.show();
-  if(monsters.size == 0){
-    showWaveNum();
-  }
   if(player.health > 0)
     player.show();
   else{
     quitGame();
   }
-  //displays shutters
-  for (var i = 0; i < shutters.size; i++) {
-    if (shutters.has(i)){
-      shutters.get(i).show();
-    }
+  if(monsters.size == 0){
+    showWaveNum();
   }
   //displays monsters
   for (var i = 0; i < monsters.size; i++){
