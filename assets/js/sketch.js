@@ -16,6 +16,8 @@ var monster_img;
 var text_s = 0;
 var mons_down = 0;
 var wave_num = 1;
+var grid;
+var routes;
 
 function preload() {
   player_right = loadImage("assets/images/player_right.png");
@@ -31,17 +33,46 @@ function preload() {
 }
 
 function setup() {
-  canvas = createCanvas(1100, 650);
+  canvas = createCanvas(1100, 660);
   centerCanvas();
-  player = new Player(1100/2, 650/2);
+  player = new Player(1100/2 - 100, 660/2 - 100);
   monsters = new Map();
   shutters = new Map();
   monster_num = 0;
   x = 0;
   y = 0;
+  grid = new Map();
   house = new House(175, 85);
   house.init();
+  routes = new Array();
+  init_grid();
+  grid_steps();
   time = null;
+}
+
+function init_grid() {
+  cell_count = 0;
+  x_count = 0;
+  y_count = 0;
+  for (var i = 0; i < 33; i++){
+    x_count = 0;
+    for ( var j = 0; j < 55; j++){
+      grid.set(cell_count, new Cell(x_count, y_count, cell_count));
+      cell_count += 1;
+      x_count += 20;
+    }
+    y_count += 20;
+  }
+}
+
+function update_grid(){
+  for (var i = 0; i < grid.size; i++){
+    if (grid.has(i)){
+      grid.get(i).re_init();
+    }
+  }
+  while(routes.length > 0)
+    routes.pop();
 }
 
 function centerCanvas() {
@@ -71,23 +102,29 @@ function spawnMonster() {
   monsters.set(monster_num, new Monster(x, y));
   monsters.get(monster_num).whichWindow();
   monster_num += 1;
-  //console.log("monster spawned");
 }
 
 function draw() {
   background(82, 89, 7);
-  //fill(255, 100);
   //keep an event listener for keyboard input
-  //keys();
   if (time == null)
-    time = second() % 60;
+    time = second();
   //console.log(second());
-  if (((second() % 60) - 5) == time) {
+  if (abs(second() - time) >= 5 && mons_down < 15) {
     spawnMonster();
     time = null;
   }
   keys();
   house.show();
+  /*for (var i = 0; i < grid.size; i++){
+    if (grid.has(i)){
+      if(grid.get(i).d > 0 && !grid.get(i).wall){
+        //grid.get(i).getDirection();
+        grid.get(i).show();
+      }
+    }
+  }*/
+  //monsDirection();
   if(player.health > 0)
     player.show();
   else{
@@ -96,6 +133,7 @@ function draw() {
   if(monsters.size == 0){
     showWaveNum();
   }
+  //console.log(inWindow(player.x, player.y));
   //displays monsters
   for (var i = 0; i < monsters.size; i++){
     if (monsters.has(i)){
@@ -119,8 +157,18 @@ function draw() {
   }
   gameInfo();
   healthBar();
-  if(mons_down == 15)
-    switchWave();
+  if(mons_down >= 15){
+    any_left = false;
+    for (var i = 0; i < monsters.size; i++){
+      if (monsters.has(i)){
+        if(monsters.get(i).health > 0){
+            any_left = true;
+        }
+      }
+    }
+    if(!any_left)
+      switchWave();
+  }
 }
 
 function healthBar() {
@@ -140,6 +188,7 @@ function switchWave() {
   monster_num = 0;
   wave_num += 1;
   mons_down = 0;
+  time = null;
   loop();
 }
 
@@ -169,7 +218,7 @@ function quitGame() {
 }
 
 function mouseReleased() {
-  console.log("playerx and playery: (" + mouseX + ", " + mouseY + ")");
+  console.log("mouseX and mouseY: (" + mouseX + ", " + mouseY + ")");
   player.attack(player.x, player.y, mouseX, mouseY);
   return false;
 }

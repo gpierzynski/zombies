@@ -1,6 +1,8 @@
 function Player(x, y) {
   this.x = x;
   this.y = y;
+  this.w = 20;
+  this.h = 20;
   this.fired = new Map();
   this.bullet_num = 0;
   this.ammunition = 25;
@@ -8,18 +10,19 @@ function Player(x, y) {
   this.right = true;
   this.move = function (direction) {
       //right
-      if (direction == 1 && otherCollision(this.x + 5, this.y) == null)
+      if (direction == 1 && otherCollision(this.x + 5, this.y) == null && !whichCell(this.x + 5, this.y, this.w, this.h).wall)
         this.x += 5;
       //down
-      if (direction == 2 && otherCollision(this.x, this.y + 5) == null)
+      if (direction == 2 && otherCollision(this.x, this.y + 5) == null && !whichCell(this.x, this.y + 5, this.w, this.h).wall)
         this.y += 5;
       //left
-      if (direction == 3 && otherCollision(this.x - 5, this.y) == null)
+      if (direction == 3 && otherCollision(this.x - 5, this.y) == null && !whichCell(this.x - 5, this.y, this.w, this.h).wall)
         this.x -= 5;
       //up
-      if (direction == 4 && otherCollision(this.x, this.y - 5) == null)
+      if (direction == 4 && otherCollision(this.x, this.y - 5) == null && !whichCell(this.x, this.y - 5, this.w, this.h).wall)
         this.y -= 5;
-
+      if(!whichCell(this.x, this.y, this.w, this.h).wall && whichCell(this.x, this.y, this.w, this.h).d != 0)
+        grid_steps();
   };
   this.attack = function (prev_x, prev_y, target_x, target_y) {
     if(target_x > this.x)
@@ -41,6 +44,7 @@ function Player(x, y) {
       if (shutters.has(i)){
         if(isColliding(this.x, this.y, this.w, this.h, shutters.get(i).centerX, shutters.get(i).centerY, shutters.get(i).centerW, shutters.get(i).centerH) && shutters.get(i).broken){
           target_window = i;
+          console.log("repairing window: " + target_window);
           break;
         }
       }
